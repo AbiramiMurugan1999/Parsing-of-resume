@@ -1,0 +1,33 @@
+from django . shortcuts import render, redirect
+from docx import *
+from .forms import Studentform
+
+lin=[]
+
+def home(request):
+    if request.method == 'POST':
+        file1=request.FILES['document']
+        document = Document(file1)
+
+        lines = []
+        for para in document.paragraphs:
+            temp=""
+            line = para.text.split()
+            c=0
+            for x in line:
+                if x== ":" :
+                    c=1
+                if c>1:
+                    temp += x +" "
+                c += 1
+            lines.append(temp)
+        for i in lines:
+            lin.append(i)
+        context= {'fname': lin[0], 'lname': lin[1], 'email': lin[2], 'phoneno': lin[3], 'edu': lin[4],
+                'hobbies': lin[5], 'skills': lin[6], 'pincode': lin[7], 'state': lin[8], 'country': lin[9],
+                 }
+        form = Studentform(context)
+        if form.is_valid():
+            form.save()
+            return redirect("/home")
+    return render(request, 'home.html')
